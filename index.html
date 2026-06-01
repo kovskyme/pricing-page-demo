@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Plans & Pricing</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:          #0a0a0f;
+      --card:        #111115;
+      --card-border: #1e1e26;
+      --text-primary: #f0f0f8;
+      --text-muted:  #6b6b80;
+      --text-dim:    #3e3e52;
+
+      --blue:        #3b82f6;
+      --blue-glow:   rgba(59, 130, 246, 0.18);
+      --blue-dim:    rgba(59, 130, 246, 0.08);
+
+      --green:       #22c55e;
+      --green-glow:  rgba(34, 197, 94, 0.18);
+      --green-dim:   rgba(34, 197, 94, 0.08);
+
+      --emerald:     #10b981;
+      --emerald-glow:rgba(16, 185, 129, 0.18);
+      --emerald-dim: rgba(16, 185, 129, 0.08);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      color: var(--text-primary);
+      min-height: 100vh;
+      padding: 80px 24px 100px;
+      /* subtle grid texture */
+      background-image:
+        linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px);
+      background-size: 40px 40px;
+    }
+
+    /* ── Header ─────────────────────────────── */
+    .header {
+      text-align: center;
+      margin-bottom: 56px;
+    }
+
+    .badge {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      border: 1px solid var(--card-border);
+      border-radius: 100px;
+      padding: 5px 14px;
+      margin-bottom: 24px;
+      background: rgba(255,255,255,0.03);
+    }
+
+    .header h1 {
+      font-size: clamp(36px, 6vw, 60px);
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      line-height: 1.08;
+      margin-bottom: 18px;
+      background: linear-gradient(160deg, #f0f0f8 30%, #6b6b80 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .header p {
+      font-size: 16px;
+      color: var(--text-muted);
+      font-weight: 400;
+      line-height: 1.6;
+      max-width: 420px;
+      margin: 0 auto 36px;
+    }
+
+    /* ── Billing Toggle ─────────────────────── */
+    .toggle-wrap {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--card-border);
+      border-radius: 100px;
+      padding: 6px 6px 6px 18px;
+    }
+
+    .toggle-label {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: color .2s;
+      white-space: nowrap;
+    }
+
+    .toggle-label.active { color: var(--text-primary); }
+
+    .toggle-track {
+      position: relative;
+      width: 44px;
+      height: 24px;
+      background: rgba(255,255,255,0.08);
+      border-radius: 100px;
+      border: 1px solid var(--card-border);
+      cursor: pointer;
+      transition: background .25s;
+      flex-shrink: 0;
+    }
+
+    .toggle-track.on { background: rgba(34, 197, 94, 0.2); border-color: rgba(34, 197, 94, 0.35); }
+
+    .toggle-thumb {
+      position: absolute;
+      top: 3px;
+      left: 3px;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: var(--text-muted);
+      transition: transform .25s cubic-bezier(.34,1.56,.64,1), background .25s;
+    }
+
+    .toggle-track.on .toggle-thumb {
+      transform: translateX(20px);
+      background: var(--green);
+    }
+
+    .toggle-label-right {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: color .2s;
+      white-space: nowrap;
+    }
+
+    .save-chip {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      color: var(--green);
+      background: rgba(34, 197, 94, 0.12);
+      border: 1px solid rgba(34, 197, 94, 0.25);
+      border-radius: 100px;
+      padding: 3px 8px;
+      margin-left: 4px;
+      opacity: 0;
+      transition: opacity .25s;
+    }
+
+    .save-chip.show { opacity: 1; }
+
+    /* ── Cards Grid ─────────────────────────── */
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+      max-width: 1040px;
+      margin: 0 auto 48px;
+    }
+
+    @media (max-width: 860px) {
+      .cards { grid-template-columns: 1fr; max-width: 440px; }
+    }
+
+    /* ── Card Base ──────────────────────────── */
+    .card {
+      position: relative;
+      background: var(--card);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      padding: 28px;
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      overflow: hidden;
+      transition:
+        transform .3s cubic-bezier(.34,1.2,.64,1),
+        border-color .3s,
+        box-shadow .3s;
+    }
+
+    /* top accent line */
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 1px;
+      border-radius: 16px 16px 0 0;
+      transition: opacity .3s;
+    }
+
+    /* subtle inner glow top */
+    .card::after {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 80px;
+      border-radius: 16px 16px 0 0;
+      pointer-events: none;
+      opacity: 0.5;
+      transition: opacity .3s;
+    }
+
+    /* Free — blue */
+    .card-free::before  { background: linear-gradient(90deg, transparent, var(--blue) 50%, transparent); }
+    .card-free::after   { background: linear-gradient(180deg, var(--blue-dim), transparent); }
+    .card-free:hover    { border-color: rgba(59,130,246,.35); box-shadow: 0 0 40px var(--blue-glow), 0 20px 60px rgba(0,0,0,.5); }
+
+    /* Pro — green */
+    .card-pro::before   { background: linear-gradient(90deg, transparent, var(--green) 50%, transparent); }
+    .card-pro::after    { background: linear-gradient(180deg, var(--green-dim), transparent); }
+    .card-pro:hover     { border-color: rgba(34,197,94,.35); box-shadow: 0 0 40px var(--green-glow), 0 20px 60px rgba(0,0,0,.5); }
+
+    /* Advance — emerald */
+    .card-advance::before  { background: linear-gradient(90deg, transparent, var(--emerald) 50%, transparent); }
+    .card-advance::after   { background: linear-gradient(180deg, var(--emerald-dim), transparent); }
+    .card-advance:hover    { border-color: rgba(16,185,129,.35); box-shadow: 0 0 40px var(--emerald-glow), 0 20px 60px rgba(0,0,0,.5); }
+
+    .card:hover { transform: translateY(-6px); }
+    .card:hover::after { opacity: 0.9; }
+
+    /* Pro card default state slightly elevated */
+    .card-pro {
+      border-color: rgba(34,197,94,.22);
+      box-shadow: 0 0 24px var(--green-glow), 0 12px 40px rgba(0,0,0,.4);
+    }
+
+    /* ── Tier Icon ──────────────────────────── */
+    .tier-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      flex-shrink: 0;
+    }
+
+    .card-free .tier-icon    { background: linear-gradient(135deg, #1d4ed8, #3b82f6); }
+    .card-pro .tier-icon     { background: linear-gradient(135deg, #15803d, #22c55e); }
+    .card-advance .tier-icon { background: linear-gradient(135deg, #065f46, #10b981); }
+
+    /* ── Popular Badge ──────────────────────── */
+    .popular-badge {
+      position: absolute;
+      top: 24px;
+      right: 24px;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--green);
+      background: rgba(34, 197, 94, 0.12);
+      border: 1px solid rgba(34, 197, 94, 0.3);
+      border-radius: 100px;
+      padding: 4px 10px;
+    }
+
+    /* ── Plan Name & Price ──────────────────── */
+    .plan-name {
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+    }
+
+    .price-row {
+      display: flex;
+      align-items: baseline;
+      gap: 4px;
+      margin-bottom: 6px;
+    }
+
+    .price-amount {
+      font-size: 44px;
+      font-weight: 800;
+      letter-spacing: -0.04em;
+      line-height: 1;
+      color: var(--text-primary);
+    }
+
+    .price-currency {
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--text-muted);
+      align-self: flex-start;
+      margin-top: 6px;
+    }
+
+    .price-period {
+      font-size: 13px;
+      font-weight: 400;
+      color: var(--text-dim);
+      margin-left: 2px;
+    }
+
+    .price-custom {
+      font-size: 36px;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      line-height: 1;
+      color: var(--text-primary);
+      margin-bottom: 6px;
+    }
+
+    .plan-desc {
+      font-size: 13.5px;
+      color: var(--text-muted);
+      line-height: 1.6;
+      margin-top: 8px;
+      margin-bottom: 24px;
+      min-height: 44px;
+    }
+
+    /* ── CTA Button ─────────────────────────── */
+    .btn {
+      display: block;
+      width: 100%;
+      padding: 12px 20px;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 600;
+      text-align: center;
+      cursor: pointer;
+      border: none;
+      letter-spacing: 0.01em;
+      transition: transform .2s, opacity .2s, box-shadow .2s;
+      margin-bottom: 28px;
+    }
+
+    .btn:hover { transform: translateY(-1px); opacity: 0.9; }
+    .btn:active { transform: translateY(0); }
+
+    .btn-free {
+      background: rgba(59, 130, 246, 0.12);
+      color: #93c5fd;
+      border: 1px solid rgba(59, 130, 246, 0.25);
+    }
+    .btn-free:hover { background: rgba(59, 130, 246, 0.18); box-shadow: 0 4px 20px rgba(59,130,246,.15); }
+
+    .btn-pro {
+      background: #f0f0f8;
+      color: #0a0a0f;
+      box-shadow: 0 2px 16px rgba(240,240,248,.12);
+    }
+    .btn-pro:hover { background: #ffffff; box-shadow: 0 6px 28px rgba(240,240,248,.2); }
+
+    .btn-advance {
+      background: rgba(16, 185, 129, 0.12);
+      color: #6ee7b7;
+      border: 1px solid rgba(16, 185, 129, 0.25);
+    }
+    .btn-advance:hover { background: rgba(16, 185, 129, 0.18); box-shadow: 0 4px 20px rgba(16,185,129,.15); }
+
+    /* ── Divider ────────────────────────────── */
+    .features-divider {
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .features-divider::before,
+    .features-divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--card-border);
+    }
+
+    .features-label {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      white-space: nowrap;
+    }
+
+    /* ── Feature List ───────────────────────── */
+    .features {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 11px;
+      flex: 1;
+    }
+
+    .feature {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 13.5px;
+      color: #c0c0d0;
+      font-weight: 400;
+      line-height: 1.4;
+    }
+
+    .feature-icon {
+      width: 18px;
+      height: 18px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .card-free .feature-icon svg    { stroke: var(--blue); }
+    .card-pro .feature-icon svg     { stroke: var(--green); }
+    .card-advance .feature-icon svg { stroke: var(--emerald); }
+
+    /* ── Footer ─────────────────────────────── */
+    .footer-note {
+      text-align: center;
+      font-size: 13px;
+      color: var(--text-dim);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .footer-note svg { stroke: var(--text-dim); }
+
+    /* ── Stagger animation on load ──────────── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .header  { animation: fadeUp .6s ease both; }
+    .card    { animation: fadeUp .6s ease both; }
+    .card:nth-child(1) { animation-delay: .1s; }
+    .card:nth-child(2) { animation-delay: .2s; }
+    .card:nth-child(3) { animation-delay: .3s; }
+    .footer-note { animation: fadeUp .6s .4s ease both; }
+
+    /* annual price swap */
+    .price-monthly { display: flex; }
+    .price-annual  { display: none; }
+    body.annual .price-monthly { display: none; }
+    body.annual .price-annual  { display: flex; }
+  </style>
+</head>
+<body>
+
+  <!-- ── Header ── -->
+  <header class="header">
+    <div class="badge">Pricing</div>
+    <h1>Plans and Pricing</h1>
+    <p>Choose the plan that fits your workflow. Upgrade or downgrade at any time.</p>
+
+    <!-- Toggle -->
+    <div class="toggle-wrap" id="toggleWrap">
+      <span class="toggle-label active" id="labelMonthly">Bill Monthly</span>
+      <div class="toggle-track" id="toggleTrack" role="switch" aria-checked="false" tabindex="0">
+        <div class="toggle-thumb"></div>
+      </div>
+      <span class="toggle-label-right" id="labelAnnually">Bill Annually</span>
+      <span class="save-chip" id="saveChip">Save 20%</span>
+    </div>
+  </header>
+
+  <!-- ── Cards ── -->
+  <div class="cards">
+
+    <!-- FREE -->
+    <article class="card card-free">
+      <div class="tier-icon"></div>
+      <div class="plan-name">Free</div>
+
+      <div class="price-row price-monthly">
+        <span class="price-currency">$</span>
+        <span class="price-amount">0</span>
+        <span class="price-period">/month</span>
+      </div>
+      <div class="price-row price-annual">
+        <span class="price-currency">$</span>
+        <span class="price-amount">0</span>
+        <span class="price-period">/month</span>
+      </div>
+
+      <p class="plan-desc">Everything you need to get started. No credit card required.</p>
+
+      <button class="btn btn-free">Start for Free</button>
+
+      <div class="features-divider">
+        <span class="features-label">Stand Out Features</span>
+      </div>
+
+      <ul class="features">
+        <li class="feature">
+          <span class="feature-icon"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="2 8 6 12 14 4"/></svg></span>
+          Up to 3 active projects
+        </li>
+        <li class="feature">
+          <span class="feature-icon"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="2 8 6 12 14 4"/></svg></span>
+          5 GB storage included
+        </li>
+        <li class="feature">
+          <span class="feature-icon"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="2 8 6 12 14 4"/></svg></span>
+          Basic analytics dashboard
+        </li>
+        <li class="feature">
+          <span class="feature-icon"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="2 8 6 12 14 4"/></svg></span>
+          Community support
+        </li>
+        <li class="feature">
+          <span class="feature-icon"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="2 8 6 12 14 4"/></svg></span>
+          API access (1k calls/day)
+        </li>
+      </ul>
+    </article>
+
+    <!-- PRO -->
+    <article class="card card-pro">
+      <div class="tier-icon"></div>
+      <span class="popular-badge">Popular</span>
+      <div class="plan-name">Pro</div>
+
+      <div class="price-row price-monthly">
+        <span class="price-currency">$</span>
+        <span class="price-amount">80</span>
+        <span class="price-period">/month</span>
+      </div>
+      <div class="price-row price-annual">
+        <span class="price-currency">$</span>
+        <span class="price-amount">64</span>
+        <span class="price-period">/month, billed annually</span>
+      </div>
+
+      <p class="plan-desc">For growing teams that need more power, speed, and collaboration.</p>
+
+      <button class="btn btn-pro">Start Free 7 Days Trial</button>
+
+      <div class="features-divider">
+        <span class="features-label">Stand Out Features</span>
+      </div>
+
+      <ul class="features">
+        <li class="feature">
+          <span class="feature-icon"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="2 8 6 12 14 4"/></svg></span>
+          Unlimited active projects
+        </li>
+        <li class="feature">
+          <span class="feature-icon"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="2 8 6 12 14 4"/></svg></span>
+          100 GB storage included
+        </li>
+        <li class="feature">
+          <span class="feature-icon"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="2 8 6 12 14 4"/></svg></span>
+          Advanced analytics &amp; reporting
+        </li>
+        <li class="feature">
+          <span class="feature-icon"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="2 8 6 12 14 4"/></svg></span>
+          Priority email &amp; chat support
+        </li>
+        <li class="feature">
+          <span class="feature-icon"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="2 8 6 12 14 4"/></svg></span>
+          API access (100k calls/day)
+        </li>
+        <li class="feature">
+          <span class="feature-icon"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="2 8 6 12 14 4"/></svg></span>
+          Team collaboration tools
+        </li>
+      </ul>
+    </article>
+
+    <!-- ADVANCE -->
+    <article class="card card-advance">
+      <div class="tier-icon"></div>
+      <div class="plan-name">Advance</div>
+
+      <div class="price-custom">Custom</div>
+
+      <p class="plan-desc">Enterprise-grade infrastructure tailored to your scale and requirements.</p>
+
+      <button class="btn btn-advance">Contact Us</button>
+
+      <div class="features-divider">
+        <span class="features-label">Stand Out Features</span>
+      </div>
+
+      <ul class="features">
+        <li class="feature">
+          <span class="feature-icon"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="2 8 6 12 14 4"/></svg></span>
+          Everything in Pro, unlimited
+        </li>
+        <li class="feature">
+          <span class="feature-icon"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="2 8 6 12 14 4"/></svg></span>
+          Custom storage &amp; data limits
+        </li>
+        <li class="feature">
+          <span class="feature-icon"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="2 8 6 12 14 4"/></svg></span>
+          Dedicated infrastructure
+        </li>
+        <li class="feature">
+          <span class="feature-icon"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="2 8 6 12 14 4"/></svg></span>
+          SLA &amp; 24/7 dedicated support
+        </li>
+        <li class="feature">
+          <span class="feature-icon"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="2 8 6 12 14 4"/></svg></span>
+          SSO, SAML &amp; audit logs
+        </li>
+        <li class="feature">
+          <span class="feature-icon"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="2 8 6 12 14 4"/></svg></span>
+          Custom contract &amp; invoicing
+        </li>
+      </ul>
+    </article>
+
+  </div>
+
+  <!-- ── Footer ── -->
+  <p class="footer-note">
+    <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="3" y="7" width="10" height="8" rx="1.5"/>
+      <path d="M5 7V5a3 3 0 0 1 6 0v2"/>
+    </svg>
+    Start your journey risk free — No credit card needed
+  </p>
+
+  <script>
+    const track   = document.getElementById('toggleTrack');
+    const lmLabel = document.getElementById('labelMonthly');
+    const laLabel = document.getElementById('labelAnnually');
+    const chip    = document.getElementById('saveChip');
+    let annual = false;
+
+    function toggleBilling() {
+      annual = !annual;
+      track.classList.toggle('on', annual);
+      track.setAttribute('aria-checked', annual);
+      lmLabel.classList.toggle('active', !annual);
+      laLabel.classList.toggle('active', annual);
+      chip.classList.toggle('show', annual);
+      document.body.classList.toggle('annual', annual);
+    }
+
+    track.addEventListener('click', toggleBilling);
+    track.addEventListener('keydown', e => { if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); toggleBilling(); } });
+    lmLabel.addEventListener('click', () => { if (annual)  toggleBilling(); });
+    laLabel.addEventListener('click', () => { if (!annual) toggleBilling(); });
+  </script>
+</body>
+</html>
